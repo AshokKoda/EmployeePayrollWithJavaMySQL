@@ -1,6 +1,7 @@
 package services;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Constants;
+import common.Util;
 import dbconnection.PayrollDbService;
 import model.Employee;
 
@@ -55,6 +57,37 @@ public class EmployeePayrollService {
 				System.out.println("Joining Date: " + e.getStartDate());
 				System.out.println("<--------------------------------------------------->");
 			});
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/* UPDATE SALARY */
+	public void updateSalary(Connection connection) {
+		try {
+			PreparedStatement ps = connection.prepareStatement(constants.EMP_UPDATE_SALARY);
+			
+			double basic_pay = 3000000;
+			double deduction = Util.formatDoubleValue(basic_pay* 0.1);
+			double taxable_pay = Util.formatDoubleValue(basic_pay - deduction);
+			double tax = Util.formatDoubleValue(taxable_pay * 0.2);
+			double net_pay = Util.formatDoubleValue(taxable_pay - tax);
+			
+			ps.setDouble(1, basic_pay);
+			ps.setDouble(2, deduction);
+			ps.setDouble(3, taxable_pay);
+			ps.setDouble(4, tax);
+			ps.setDouble(5, net_pay);
+			ps.setInt(6, 1);
+			
+			int status = ps.executeUpdate();
+			
+			if(status > 0) {
+				System.out.println("Salary is updated with " + basic_pay + " successfully.");
+			}else {
+				System.out.println("There is some error occurs.");
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
