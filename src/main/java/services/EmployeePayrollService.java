@@ -19,7 +19,7 @@ public class EmployeePayrollService {
 	Connection connection;
 	List<Employee> empList = new ArrayList<Employee>();
 	Constants constants;
-	
+
 	public EmployeePayrollService() {
 		constants = new Constants();
 		payrollDbService = PayrollDbService.init();
@@ -30,14 +30,14 @@ public class EmployeePayrollService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/* FETCH EMPLOYEE DATA FROM DATABASE */
 	public void getAllEmployeesData() {
 		try {
 			Statement st = connection.createStatement();
 			ResultSet rs = st.executeQuery(constants.FETCH_EMP_DATA);
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				Employee employee = new Employee();
 				employee.setId(rs.getInt("id"));
 				employee.setName(rs.getString("name"));
@@ -47,7 +47,7 @@ public class EmployeePayrollService {
 				employee.setStartDate(rs.getDate("startDate"));
 				empList.add(employee);
 			}
-			
+
 			empList.forEach(e -> {
 				System.out.println("ID: " + e.getId());
 				System.out.println("Name: " + e.getName());
@@ -61,30 +61,30 @@ public class EmployeePayrollService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/* UPDATE SALARY */
 	public void updateSalary(Connection connection) {
 		try {
 			PreparedStatement ps = connection.prepareStatement(constants.EMP_UPDATE_SALARY);
-			
+
 			double basic_pay = 3000000;
-			double deduction = Util.formatDoubleValue(basic_pay* 0.1);
+			double deduction = Util.formatDoubleValue(basic_pay * 0.1);
 			double taxable_pay = Util.formatDoubleValue(basic_pay - deduction);
 			double tax = Util.formatDoubleValue(taxable_pay * 0.2);
 			double net_pay = Util.formatDoubleValue(taxable_pay - tax);
-			
+
 			ps.setDouble(1, basic_pay);
 			ps.setDouble(2, deduction);
 			ps.setDouble(3, taxable_pay);
 			ps.setDouble(4, tax);
 			ps.setDouble(5, net_pay);
 			ps.setInt(6, 1);
-			
+
 			int status = ps.executeUpdate();
-			
-			if(status > 0) {
+
+			if (status > 0) {
 				System.out.println("Salary is updated with " + basic_pay + " successfully.");
-			}else {
+			} else {
 				System.out.println("There is some error occurs.");
 			}
 			System.out.println("<--------------------------------------------------->");
@@ -92,7 +92,7 @@ public class EmployeePayrollService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/* GET EMPLOYEE DATA WITH DATE RANGE */
 	public void getEmpDataWithDateRange(String startDate, String endDate) {
 		try {
@@ -100,8 +100,8 @@ public class EmployeePayrollService {
 			ps.setString(1, startDate);
 			ps.setString(2, endDate);
 			ResultSet rs = ps.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				Employee employee = new Employee();
 				employee.setId(rs.getInt("id"));
 				employee.setName(rs.getString("name"));
@@ -109,12 +109,55 @@ public class EmployeePayrollService {
 				employee.setPhoneno(rs.getString("phoneno"));
 				employee.setAddress(rs.getString("address"));
 				employee.setStartDate(rs.getDate("startDate"));
-				
+
 				System.out.println(employee);
 			}
 			System.out.println("<--------------------------------------------------->");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/* GET SALARY DETAILS BY GENDER */
+	public void getSalaryByGender() {
+		try {
+			PreparedStatement psSum = connection.prepareStatement(constants.EMP_SALARY_GROUP_BY_GENDER); // SUM
+			ResultSet rsSum = psSum.executeQuery();
+			while (rsSum.next()) {
+				System.out.println("Gender: " + rsSum.getString("gender"));
+				System.out.println("Sum of salary: " + rsSum.getDouble("SUM(s.basic_pay)"));
+			}
+			
+			PreparedStatement psMax = connection.prepareStatement(constants.MAX_EMP_SALARY_BY_GENDER); // MAX
+			ResultSet rsMax = psMax.executeQuery();
+			while (rsMax.next()) {
+				System.out.println("Gender: " + rsMax.getString("gender"));
+				System.out.println("Maximum of salary: " + rsMax.getDouble("MAX(s.basic_pay)"));
+			}
+			
+			PreparedStatement psMin = connection.prepareStatement(constants.MIN_EMP_SALARY_BY_GENDER); // MIN
+			ResultSet rsMin = psMin.executeQuery();
+			while (rsMin.next()) {
+				System.out.println("Gender: " + rsMin.getString("gender"));
+				System.out.println("Minimum of salary: " + rsMin.getDouble("MIN(s.basic_pay)"));
+			}
+			
+			PreparedStatement psAvg = connection.prepareStatement(constants.AVG_EMP_SALARY_BY_GENDER); // AVG
+			ResultSet rsAvg = psAvg.executeQuery();
+			while (rsAvg.next()) {
+				System.out.println("Gender: " + rsAvg.getString("gender"));
+				System.out.println("Average of salary: " + Util.formatDoubleValue(rsAvg.getDouble("AVG(s.basic_pay)")));
+			}
+			
+			PreparedStatement psCount = connection.prepareStatement(constants.COUNT_EMP_SALARY_BY_GENDER); // COUNT
+			ResultSet rsCount = psCount.executeQuery();
+			while (rsCount.next()) {
+				System.out.println("Gender: " + rsCount.getString("gender"));
+				System.out.println("Count of genders: " + rsCount.getInt("COUNT(s.basic_pay)"));
+			}
+			System.out.println("<--------------------------------------------------->");
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
