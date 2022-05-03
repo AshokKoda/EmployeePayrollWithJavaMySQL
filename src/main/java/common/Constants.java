@@ -20,4 +20,6 @@ public class Constants {
 	public final String COUNT_EMP_SALARY_BY_GENDER = "select ep.gender, COUNT(s.basic_pay) from employee_payroll ep, salary_tbl s where ep.id=s.emp_id GROUP BY gender";
 
 	public final String NEW_EMP_ADD = "insert into employee_payroll (name, gender, startDate, phoneno, address) values (?,?,?,?,?);";
+	public final String NEW_SALARY_DETAILS = "insert into salary_tbl (basic_pay,deduction, taxable_pay, tax, net_pay,emp_id)"
+			+ "values (?,?,?,?,?,?)";
 }

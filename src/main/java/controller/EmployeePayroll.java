@@ -26,6 +26,8 @@ public class EmployeePayroll {
 		
 		System.out.println("<---------------- Add new employee ---------------->");
 		employeePayrollService.addNewEmployees();
+		
+		payrollDbService.close();
 
 	}
 

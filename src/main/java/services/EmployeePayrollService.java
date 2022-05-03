@@ -26,11 +26,11 @@ public class EmployeePayrollService {
 		constants = new Constants();
 		payrollDbService = PayrollDbService.init();
 		connection = payrollDbService.getConnection();
-//		try {
-//			connection.setAutoCommit(false);
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* FETCH EMPLOYEE DATA FROM DATABASE */
@@ -163,33 +163,70 @@ public class EmployeePayrollService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/* ADD NEW EMPLOYEE DATA */
 	public void addNewEmployees() {
 		Scanner sc = new Scanner(System.in);
 		try {
-			PreparedStatement ps = connection.prepareStatement(constants.NEW_EMP_ADD);
+			PreparedStatement ps = connection.prepareStatement(constants.NEW_EMP_ADD, Statement.RETURN_GENERATED_KEYS);
 			System.out.println("Enter the employee name: ");
 			String name = sc.nextLine();
 			ps.setString(1, name);
-			
+
 			System.out.println("Enter the gender (M/F): ");
 			ps.setString(2, sc.nextLine());
-			
+
 			System.out.println("Enter the joining date (YYYY-MM-DD): ");
 			Date joinDate = Date.valueOf(sc.nextLine());
 			ps.setDate(3, joinDate);
-			
+
 			System.out.println("Enter the phone number: ");
 			ps.setString(4, sc.nextLine());
-			
+
 			System.out.println("Enter the address: ");
 			ps.setString(5, sc.nextLine());
+
+			int status = ps.executeUpdate();
+
+			if (status > 0) {
+				int id = 0;
+				ResultSet rs = ps.getGeneratedKeys();
+				if (rs.next()) {
+					System.out.println(rs);
+					id = rs.getInt(1);
+				}
+				System.out.println("Enter the salary : ");
+				double salary = sc.nextDouble();
+				addSalaryDetails(salary, id);
+			}
+			System.out.println("<--------------------------------------------------->");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		sc.close();
+	}
+
+	/* ADD NEW EMPLOYEE SALARY DETAILS */
+	private void addSalaryDetails(double salary, int id) {
+		try {
+			PreparedStatement ps = connection.prepareStatement(constants.NEW_SALARY_DETAILS);
+			
+			double deduction = Util.formatDoubleValue(salary * 0.1);
+			double taxable_pay = Util.formatDoubleValue(salary - deduction);
+			double tax = Util.formatDoubleValue(taxable_pay * 0.2);
+			double net_pay = Util.formatDoubleValue(taxable_pay - tax);
+			
+			ps.setDouble(1, salary);
+			ps.setDouble(2, deduction);
+			ps.setDouble(3, taxable_pay);
+			ps.setDouble(4, tax);
+			ps.setDouble(5, net_pay);
+			ps.setInt(6, id);
 			
 			int status = ps.executeUpdate();
-			
 			if(status > 0) {
 				System.out.println("Employee added successfully.");
+				connection.commit();
 			}else {
 				System.out.println("There is some error occurs.");
 			}
@@ -197,6 +234,6 @@ public class EmployeePayrollService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		sc.close();
+		
 	}
 }
