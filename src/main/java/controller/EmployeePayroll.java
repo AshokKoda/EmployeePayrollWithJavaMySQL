@@ -19,6 +19,8 @@ public class EmployeePayroll {
 		System.out.println("<---------------- Update Salary with 3000000 ---------------->");
 		PayrollDbService payrollDbService = new PayrollDbService();
 		employeePayrollService.updateSalary(payrollDbService.getConnection());
+		System.out.println("<---------------- Get data with date range ---------------->");
+		employeePayrollService.getEmpDataWithDateRange("2021-01-01", "2022-01-01");
 
 	}
 

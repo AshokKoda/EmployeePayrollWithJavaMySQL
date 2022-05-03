@@ -87,8 +87,34 @@ public class EmployeePayrollService {
 			}else {
 				System.out.println("There is some error occurs.");
 			}
-			
+			System.out.println("<--------------------------------------------------->");
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/* GET EMPLOYEE DATA WITH DATE RANGE */
+	public void getEmpDataWithDateRange(String startDate, String endDate) {
+		try {
+			PreparedStatement ps = connection.prepareStatement(constants.EMP_DATA_BASED_ON_JOIN_DATE);
+			ps.setString(1, startDate);
+			ps.setString(2, endDate);
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Employee employee = new Employee();
+				employee.setId(rs.getInt("id"));
+				employee.setName(rs.getString("name"));
+				employee.setGender(rs.getString("gender").charAt(0));
+				employee.setPhoneno(rs.getString("phoneno"));
+				employee.setAddress(rs.getString("address"));
+				employee.setStartDate(rs.getDate("startDate"));
+				
+				System.out.println(employee);
+			}
+			System.out.println("<--------------------------------------------------->");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
