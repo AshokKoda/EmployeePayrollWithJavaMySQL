@@ -23,6 +23,9 @@ public class EmployeePayroll {
 		employeePayrollService.getEmpDataWithDateRange("2021-01-01", "2022-01-01");
 		System.out.println("<---------------- Get salary by gender ---------------->");
 		employeePayrollService.getSalaryByGender();
+		
+		System.out.println("<---------------- Add new employee ---------------->");
+		employeePayrollService.addNewEmployees();
 
 	}
 
