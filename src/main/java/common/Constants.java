@@ -22,4 +22,5 @@ public class Constants {
 	public final String NEW_EMP_ADD = "insert into employee_payroll (name, gender, startDate, phoneno, address) values (?,?,?,?,?);";
 	public final String NEW_SALARY_DETAILS = "insert into salary_tbl (basic_pay,deduction, taxable_pay, tax, net_pay,emp_id)"
 			+ "values (?,?,?,?,?,?)";
+	public final String DELETE_EMP_DETAILS = "delete from employee_payroll where id =?";
 }

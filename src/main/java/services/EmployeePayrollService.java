@@ -119,6 +119,7 @@ public class EmployeePayrollService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	/* GET SALARY DETAILS BY GENDER */
@@ -210,30 +211,47 @@ public class EmployeePayrollService {
 	private void addSalaryDetails(double salary, int id) {
 		try {
 			PreparedStatement ps = connection.prepareStatement(constants.NEW_SALARY_DETAILS);
-			
+
 			double deduction = Util.formatDoubleValue(salary * 0.1);
 			double taxable_pay = Util.formatDoubleValue(salary - deduction);
 			double tax = Util.formatDoubleValue(taxable_pay * 0.2);
 			double net_pay = Util.formatDoubleValue(taxable_pay - tax);
-			
+
 			ps.setDouble(1, salary);
 			ps.setDouble(2, deduction);
 			ps.setDouble(3, taxable_pay);
 			ps.setDouble(4, tax);
 			ps.setDouble(5, net_pay);
 			ps.setInt(6, id);
-			
+
 			int status = ps.executeUpdate();
-			if(status > 0) {
+			if (status > 0) {
 				System.out.println("Employee added successfully.");
 				connection.commit();
-			}else {
+			} else {
 				System.out.println("There is some error occurs.");
 			}
 			System.out.println("<--------------------------------------------------->");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+	}
+
+	/* DELETE EMPLOYEE FROM DATABASE */
+	public void deleteEmployee() {
+		Scanner sc = new Scanner(System.in);
+		try {
+			PreparedStatement ps = connection.prepareStatement(constants.DELETE_EMP_DETAILS);
+			System.out.println("Enter the ID to delete: ");
+			int id = sc.nextInt();
+			ps.setInt(1, id);
+			int count = ps.executeUpdate();
+			System.out.println("Data deleted successfully." + "Total count: " + count);
+			connection.setAutoCommit(true);
+			sc.close();
+		} catch (SQLException e) {
+			System.out.println("Exception: " + e.getMessage());
+		}
 	}
 }

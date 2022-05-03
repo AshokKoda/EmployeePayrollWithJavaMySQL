@@ -25,7 +25,9 @@ public class EmployeePayroll {
 		employeePayrollService.getSalaryByGender();
 		
 		System.out.println("<---------------- Add new employee ---------------->");
-		employeePayrollService.addNewEmployees();
+		//employeePayrollService.addNewEmployees();
+		System.out.println("<---------------- Delete employee ---------------->");
+		employeePayrollService.deleteEmployee();
 		
 		payrollDbService.close();
 
